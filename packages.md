@@ -15,6 +15,15 @@
 * Geany
 * Leafpad
 * VLC
+* Transmission
+* GIMP
+* Inkscape
+* Pidgin
+* Firefox
+* Avidemux
+* GIT
+* GHex
+* GParted
 
 ## Опциональные
 
