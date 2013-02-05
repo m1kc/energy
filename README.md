@@ -7,5 +7,5 @@ Instructions
 ------------
 
 1. Clone it.
-2. `sudo ./releng/build.sh -v`
+2. `./make.sh`
 3. Done.
