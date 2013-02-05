@@ -10,6 +10,7 @@
 
 ### all
 * net-tools
+* networkmanager
 * gstreamer
 * JDK
 * Geany
