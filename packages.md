@@ -5,10 +5,12 @@
 ### DE
 * LXDE
 
+### System
+* yaourt
+
 ### all
 * net-tools
 * gstreamer
-* yaourt
 * JDK
 
 ## Опциональные
