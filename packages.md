@@ -12,6 +12,9 @@
 * net-tools
 * gstreamer
 * JDK
+* Geany
+* Leafpad
+* VLC
 
 ## Опциональные
 
