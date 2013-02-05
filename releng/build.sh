@@ -38,9 +38,13 @@ _usage ()
 
 # Helper function to run make_*() only one time per architecture.
 run_once() {
+    echo -n "==> Target $1 for $arch: "
     if [[ ! -e ${work_dir}/build.${1}_${arch} ]]; then
+    	echo "running"
         $1
         touch ${work_dir}/build.${1}_${arch}
+    else
+        echo "skipping"
     fi
 }
 
