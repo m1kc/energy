@@ -1,4 +1,4 @@
-energy
-======
+Energy Linux
+============
 
-«Energy Linux — batteries included.»
+Batteries included.
