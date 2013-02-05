@@ -7,6 +7,11 @@
 * dmd
 
 ### test section
+* samba
+* net-tools
+* gstreamer
+* yaourt
+* JDK
 * netbeans
 
 ## Опциональные
