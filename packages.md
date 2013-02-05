@@ -2,19 +2,23 @@
 
 ## Обязательные
 
-### test section
-* sfn
-* dmd
+### DE
+* LXDE
 
-### test section
-* samba
+### all
 * net-tools
 * gstreamer
 * yaourt
 * JDK
-* netbeans
 
 ## Опциональные
 
-### sec
-* pk
+### DE
+* XFCE
+* Cinnamon
+
+### Network
+* samba
+
+### Devel
+* netbeans
