@@ -1,11 +1,18 @@
 #!/bin/sh
 
+# echo ==
+# 	will be eliminated
+#
+# "111>>111"
+# 	will be replaced to
+# >>
+
 TMP=/tmp/.instvar
 JOURNAL=/tmp/.instlog
 
 shell(){
 	dialog --msgbox "Redirecting you to command shell. Type \"exit\" when you finish." 0 0
-	zsh
+	echo == zsh
 }
 
 # Welcome!
@@ -37,52 +44,94 @@ case $disk in
 		shell
 		;;
 	*)
-		cfdisk $disk
+		echo == cfdisk $disk
 		;;
 esac
 
 # FS
-echo Now we must create filesystems. Enter \"manual\" to manually create them, or enter desired partition to create ext4 on, or leave blank to create ext4 on ${disk}1:
-read fs
-case $fs in
+#echo Now we must create filesystems. Enter \"manual\" to manually create them, or enter desired partition to create ext4 on, or leave blank to create ext4 on ${disk}1:
+#read fs
+#case $fs in
+#	manual)
+#		shell
+#		;;
+#	"")
+#		echo == mkfs.ext4 ${disk}1
+#		;;
+#	*)
+#		echo == mkfs.ext4 $fs
+#		;;
+#esac
+partitions1="`lsblk -r | grep part | cut -d" " -f1`"
+partitions=""
+for i in $partitions1; do partitions="${partitions} /dev/${i} -"; done
+dialog --no-cancel --menu "Now we must create filesystems.
+
+Select a partition to create ext4 on or \"manual\" if you want command shell." 0 0 0 $partitions manual "" 2> $TMP
+partition=`cat $TMP`
+case $partition in
 	manual)
 		shell
 		;;
-	"")
-		echo == mkfs.ext4 ${disk}1
-		;;
 	*)
-		echo == mkfs.ext4 $fs
+		echo == mkfs.ext4 $partition
 		;;
 esac
 
 # Mount
-echo Now we need to mount new filesystems to /mnt. Enter \"manual\" to manually mount them, or enter desired partition to mount, or leave blank to mount ${disk}1:
-read mou
+#echo Now we need to mount new filesystems to /mnt. Enter \"manual\" to manually mount them, or enter desired partition to mount, or leave blank to mount ${disk}1:
+#read mou
+#case $mou in
+#	manual)
+#		shell
+#		;;
+#	"")
+#		echo == mount ${disk}1 /mnt
+#		;;
+#	*)
+#		echo == mount $mou /mnt
+#		;;
+#esac
+dialog --no-cancel --menu "Now we need to mount new filesystems to /mnt.
+
+Select a partition to mount or \"manual\" if you want command shell." 0 0 0 $partitions manual "" 2> $TMP
+mou=`cat $TMP`
 case $mou in
 	manual)
 		shell
 		;;
-	"")
-		echo == mount ${disk}1 /mnt
-		;;
 	*)
-		echo == mount $mou /mnt
+		echo == mount $partition /mnt
 		;;
 esac
 
 # Internet
-echo It would be great to connect to the Internet to fetch latest updates. Of course, you can skip this step and install them later. Moreover, if you connect using eth0 \(default wired connection\), connection will be established automatically. In any of these cases, just type \"exit\" to leave command "shell;" else configure your connection manually.
-shell
-#TODO: wifi-menu
+dialog --no-cancel --menu "It would be great to connect to the Internet to fetch latest updates. Of course, you can skip this step and install them later. Moreover, if you connect using wired connection like eth0, connection will be established automatically. In any of these cases, just type \"exit\" to leave command shell; otherwise configure your connection manually." 0 0 0 skip "Skip this step" wired "Just check it" wifi "Select wireless network" manual "" 2> $TMP
+internet=`cat $TMP`
+case $internet in
+	manual)
+		shell
+		;;
+	wired)
+		echo == ping -c 5 google.com
+		;;
+	wifi)
+		echo == wifi-menu
+		;;
+	skip)
+		;;
+	*)
+		;;
+esac
 
 # TODO: Mirrorlist
 #echo You may want to edit /etc/pacman.d/mirrorlist
 # OR NOT
 
 # Pacstrap it
-echo Okay, now we will pacstrap base packages to your new system. Just relax and wait.
+dialog --msgbox "Okay, now we will pacstrap base packages to your new system. Just relax and wait." 0 0
 echo == pacstrap /mnt base
+
 # TODO: base-devel
 
 # TODO: select bootloader
@@ -99,8 +148,8 @@ echo == arch-chroot /mnt pacman -S grub-bios
 #shell
 
 # fstab
-echo Okay. Now we will generate fstab "for" your new system. Just relax and wait.
-echo == genfstab -p /mnt >> /mnt/etc/fstab
+dialog --msgbox "Okay. Now we will generate fstab for your new system. Just relax and wait."
+echo == genfstab -p /mnt "111>>111" /mnt/etc/fstab
 
 # TODO: hostname
 
@@ -124,4 +173,7 @@ echo == genfstab -p /mnt >> /mnt/etc/fstab
 # TODO: add user
 
 # Complete
-echo Installation "complete!" Type \"reboot\" to reboot now.
+dialog --yesno "Installation complete! Reboot now?" 0 0
+if [ $? == 0 ]; then
+	echo == reboot
+fi
