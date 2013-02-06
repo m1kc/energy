@@ -1,22 +1,45 @@
 #!/bin/sh
 
+TMP=/tmp/.instvar
+JOURNAL=/tmp/.instlog
+
 shell(){
-	echo Redirecting you to command shell. Type \"exit\" when you finish.
+	dialog --msgbox "Redirecting you to command shell. Type \"exit\" when you finish." 0 0
 	zsh
 }
 
 # Welcome!
-echo Welcome to the Energy Linux installer.
-echo Energy Linux is a lightweight Linux distribution based on Arch with batteries and other stuff included. Our goal is to create a distribution simple as Arch but works out of the box. We hope you will like it.
-echo Press Enter to begin installation.
-read
+#echo Welcome to the Energy Linux installer.
+#echo Energy Linux is a lightweight Linux distribution based on Arch with batteries and other stuff included. Our goal is to create a distribution simple as Arch but works out of the box. We hope you will like it.
+#echo Press Enter to begin installation.
+#read
+dialog --msgbox "Welcome to the Energy Linux installer.
+
+Energy Linux is a lightweight Linux distribution based on Arch with batteries and other stuff included. Our goal is to create a distribution simple as Arch but works out of the box. We hope you will like it.
+
+Click OK to begin installation." 0 0
 
 # Partition
-echo At first we need to partition the hard drive. If you have no special needs, create one partition filling the whole disk.
-echo Enter your hard drive name or leave blank "for" /dev/sda:
-read disk
-if [ -z $disk ]; then disk="/dev/sda"; fi
-echo == cfdisk $disk
+#echo At first we need to partition the hard drive. If you have no special needs, create one partition filling the whole disk.
+#echo Enter your hard drive name or leave blank "for" /dev/sda:
+#read disk
+#if [ -z $disk ]; then disk="/dev/sda"; fi
+#echo == cfdisk $disk
+disks1="`lsblk -r | grep disk | cut -d" " -f1`"
+disks=""
+for i in $disks1; do disks="${disks} /dev/${i} -"; done
+dialog --no-cancel --menu "At first we need to partition the hard drive. If you have no special needs, create one partition filling the whole disk.
+
+Select your hard drive or \"manual\" if you want command shell." 0 0 0 $disks manual "" 2> $TMP
+disk=`cat $TMP`
+case $disk in
+	manual)
+		shell
+		;;
+	*)
+		cfdisk $disk
+		;;
+esac
 
 # FS
 echo Now we must create filesystems. Enter \"manual\" to manually create them, or enter desired partition to create ext4 on, or leave blank to create ext4 on ${disk}1:
