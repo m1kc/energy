@@ -26,7 +26,7 @@ Energy Linux is a lightweight Linux distribution based on Arch with batteries an
 
 Click OK to begin installation." 0 0
 
-# Partition
+### Partition
 disks1="`lsblk -r | grep disk | cut -d" " -f1`"
 disks=""
 for i in $disks1; do disks="${disks} /dev/${i} -"; done
@@ -127,7 +127,22 @@ echo == cat $TMP "111>111" /mnt/etc/hostname
 # TODO: select localtime
 dialog --msgbox "Auto-selecting timezone Europe/Moscow. Hope it is OK." 0 0
 echo == ln -s /mnt/usr/share/zoneinfo/Europe/Moscow /mnt/etc/localtime
-# TODO: FUCK IT
+# TODO: FUCK IT, USE SYSTEMD
+#To change the hardware clock time standard to localtime use:
+# timedatectl set-local-rtc 1
+#And to set it to UTC use:
+# timedatectl set-local-rtc 0
+#
+#To check the current zone:
+#$ timedatectl status
+#To list available zones:
+#$ timedatectl list-timezones
+#To change your time zone:
+# timedatectl set-timezone <Zone>/<SubZone>
+#Example:
+# timedatectl set-timezone Canada/Eastern
+
+# TODO: set up NTP
 
 # TODO: locale.conf
 # TODO: /etc/locale.gen and generate with locale-gen.
