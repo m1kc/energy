@@ -75,7 +75,8 @@ ITEM=5
 installer_mirrors()
 {
 # TODO: ADD SOME TEXT!
-echo == nano /mnt/etc/pacman.d/mirrorlist
+echo == nano /etc/pacman.d/mirrorlist
+# TODO: copy it?
 ITEM=6
 }
 
