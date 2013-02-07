@@ -1,14 +1,14 @@
 # Список пакетов для установки
 
-## Обязательные
-
-### DE
+## DE
 * LXDE
+* XFCE (?)
+* Cinnamon (?)
 
-### System
+## System
 * yaourt
 
-### all
+## all
 * net-tools
 * networkmanager
 * gstreamer
@@ -25,15 +25,5 @@
 * GIT
 * GHex
 * GParted
-
-## Опциональные
-
-### DE
-* XFCE
-* Cinnamon
-
-### Network
 * samba
-
-### Devel
 * netbeans
