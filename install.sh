@@ -112,9 +112,7 @@ echo == pacstrap /mnt base
 #    Install GRUB after chrooting (refer to the #Configure the system section). 
 #Syslinux
 # arch-chroot /mnt pacman -S syslinux
-echo == arch-chroot /mnt pacman -S grub-bios
-#echo Now you must install a bootloader. Sorry, this part is not automated yet.
-#shell
+echo == arch-chroot /mnt pacman -S --noconfirm grub-bios
 
 ### fstab
 dialog --msgbox "Okay. Now we will generate fstab for your new system. Just relax and wait." 0 0
