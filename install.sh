@@ -70,7 +70,7 @@ case $mou in
 		shell
 		;;
 	*)
-		echo == mount $partition /mnt
+		echo == mount $mou /mnt
 		;;
 esac
 
