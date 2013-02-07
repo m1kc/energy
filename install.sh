@@ -1,5 +1,16 @@
 #!/bin/sh
 
+# echo ==
+# will be eliminated
+#
+# "111>>111"
+# will be replaced to
+# >>
+#
+# "111>111"
+# will be replaced to
+# >
+
 TMP=/tmp/.instvar
 JOURNAL=/tmp/.instlog
 ITEM=1
