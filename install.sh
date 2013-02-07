@@ -148,7 +148,7 @@ echo == arch-chroot /mnt pacman -S grub-bios
 #shell
 
 # fstab
-dialog --msgbox "Okay. Now we will generate fstab for your new system. Just relax and wait."
+dialog --msgbox "Okay. Now we will generate fstab for your new system. Just relax and wait." 0 0
 echo == genfstab -p /mnt "111>>111" /mnt/etc/fstab
 
 # TODO: hostname
