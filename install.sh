@@ -146,8 +146,8 @@ ITEM=8
 
 installer_bootload()
 {
-# TODO: make install clean
-dialog --msgbox "Sorry!" 0 0
+# TODO: select
+#dialog --msgbox "Sorry!" 0 0
 
 #GRUB
 #    For BIOS: 
@@ -158,7 +158,20 @@ dialog --msgbox "Sorry!" 0 0
 #Syslinux
 # arch-chroot /mnt pacman -S syslinux
 
-#############echo == arch-chroot /mnt pacman -S --noconfirm grub-bios
+dialog --infobox "Installing grub..." 0 0
+echo == arch-chroot /mnt pacman -S --noconfirm grub-bios
+
+disks1="`lsblk -r | grep disk | cut -d" " -f1`"
+disks=""
+for i in $disks1; do disks="${disks} /dev/${i} -"; done
+dialog --menu "Select a hard drive for grub to bee installed." 0 0 0 $disks 2> $TMP
+if [ $? "!=" 0 ]; then return; fi
+disk=`cat $TMP`
+
+dialog --infobox "Installing grub to MBR..." 0 0
+echo == arch-chroot /mnt grub-install $disk
+dialog --infobox "Creating grub.cfg..." 0 0
+echo == arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 ITEM=9
 }
