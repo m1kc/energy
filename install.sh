@@ -229,6 +229,14 @@ if [ $? == 0 ]; then
 	# TODO: exec ck-launch-session dbus-launch startlxde ?
 fi
 
+### Fonts
+dialog --yesno "Install TTF fonts?
+
+Answer \"yes\" if you are not sure." 0 0
+if [ $? == 0 ]; then
+	echo == arch-chroot /mnt pacman -S --noconfirm ttf-bitstream-vera ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
+fi
+
 ITEM=reboot
 }
 
