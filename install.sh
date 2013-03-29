@@ -169,6 +169,14 @@ echo == arch-chroot /mnt useradd -m -g users -G audio,disk,floppy,games,locate,l
 echo == arch-chroot /mnt passwd ${username}
 # TODO: add to sudoers
 
+### dhcpcd
+dialog --yesno "Enable dhcpcd?
+
+Answer \"yes\" if you are not sure." 0 0
+if [ $? == 0 ]; then
+	echo == systemctl --root=/mnt enable dhcpcd.service
+fi
+
 ITEM=8
 }
 
