@@ -15,13 +15,23 @@ TMP=/tmp/.instvar
 JOURNAL=/tmp/.instlog
 ITEM=1
 
+messagebox()
+{
+	dialog --msgbox "$1" 0 0
+}
+
+infobox()
+{
+	dialog --infobox "$1" 0 0
+}
+
 installer_welcome()
 {
-dialog --msgbox "Welcome to the Energy Linux installer.
+messagebox "Welcome to the Energy Linux installer.
 
 Energy Linux is a lightweight Linux distribution based on Arch with batteries and other stuff included. Our goal is to create a distribution simple as Arch but works out of the box. We hope you will like it.
 
-Click OK to begin installation." 0 0
+Click OK to begin installation."
 }
 
 installer_partition()
@@ -85,8 +95,6 @@ ITEM=5
 
 installer_mirrors()
 {
-#echo == nano /etc/pacman.d/mirrorlist
-
 mirrors1=`cat /etc/pacman.d/mirrorlist | grep -v "#" | grep "tp://" | cut -d" " -f3`
 mirrors=""
 for i in $mirrors1; do mirrors="${mirrors} ${i} -"; done
@@ -108,7 +116,7 @@ ITEM=7
 installer_conf()
 {
 ### fstab
-dialog --infobox "Creating fstab..." 0 0
+infobox "Creating fstab..."
 echo == genfstab -U -p /mnt "111>>111" /mnt/etc/fstab
 
 ### hostname
@@ -140,11 +148,11 @@ echo == cat $TMP "111>111" /mnt/etc/hostname
 
 ### mkinitcpio
 # TODO: Configure /etc/mkinitcpio.conf as needed
-dialog --infobox "Creating initial RAM disk..." 0 0
+infobox "Creating initial RAM disk..."
 echo == arch-chroot /mnt mkinitcpio -p linux
 
 ### Root password
-dialog --msgbox "Now we need to set root password." 0 0
+messagebox "Now we need to set root password."
 echo == arch-chroot /mnt passwd
 
 ITEM=8
@@ -156,27 +164,27 @@ installer_bootload()
 #dialog --msgbox "Sorry!" 0 0
 
 #GRUB
-#    For BIOS: 
+#    For BIOS:
 # arch-chroot /mnt pacman -S grub-bios
-#    For EFI (in rare cases you will need grub-efi-i386 instead): 
+#    For EFI (in rare cases you will need grub-efi-i386 instead):
 # arch-chroot /mnt pacman -S grub-efi-x86_64
-#    Install GRUB after chrooting (refer to the #Configure the system section). 
+#    Install GRUB after chrooting (refer to the #Configure the system section).
 #Syslinux
 # arch-chroot /mnt pacman -S syslinux
 
-dialog --infobox "Installing grub..." 0 0
+infobox "Installing grub..."
 echo == arch-chroot /mnt pacman -S --noconfirm grub-bios
 
 disks1="`lsblk -r | grep disk | cut -d" " -f1`"
 disks=""
 for i in $disks1; do disks="${disks} /dev/${i} -"; done
-dialog --menu "Select a hard drive for grub to bee installed." 0 0 0 $disks 2> $TMP
+dialog --menu "Select a hard drive for grub to be installed." 0 0 0 $disks 2> $TMP
 if [ $? "!=" 0 ]; then return; fi
 disk=`cat $TMP`
 
-dialog --infobox "Installing grub to MBR..." 0 0
+infobox "Installing grub to MBR..."
 echo == arch-chroot /mnt grub-install $disk
-dialog --infobox "Creating grub.cfg..." 0 0
+infobox "Creating grub.cfg..."
 echo == arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 ITEM=9
