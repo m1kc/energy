@@ -85,9 +85,15 @@ ITEM=5
 
 installer_mirrors()
 {
-# TODO: ADD SOME TEXT!
-echo == nano /etc/pacman.d/mirrorlist
-# TODO: copy it?
+#echo == nano /etc/pacman.d/mirrorlist
+
+mirrors1=`cat /etc/pacman.d/mirrorlist | grep -v "#" | grep "tp://" | cut -d" " -f3`
+mirrors=""
+for i in $mirrors1; do mirrors="${mirrors} ${i} -"; done
+dialog --menu "Select a mirror to use during install." 0 0 0 $mirrors 2> $TMP
+if [ $? "!=" 0 ]; then return; fi
+mirror=`cat $TMP`
+echo "Server = ${mirror}" "111>111" /etc/pacman.d/mirrorlist
 ITEM=6
 }
 
