@@ -184,8 +184,14 @@ ITEM=9
 
 installer_stuff()
 {
-# TODO: make install clean
-dialog --msgbox "Sorry!" 0 0
+# X server
+dialog --yesno "Install X server?
+
+Answer \"yes\" if you are not sure." 0 0
+if [ $? == 0 ]; then
+	echo == arch-chroot /mnt pacman -S --noconfirm xorg-server xorg-xinit xf86-video-vesa xterm
+fi
+
 ITEM=reboot
 }
 
