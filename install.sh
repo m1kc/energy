@@ -214,6 +214,21 @@ if [ $? == 0 ]; then
 	echo == arch-chroot /mnt pacman -S --noconfirm xorg-server xorg-xinit xf86-video-vesa xterm
 fi
 
+### LXDE
+dialog --yesno "Install LXDE?
+
+Answer \"yes\" if you are not sure." 0 0
+if [ $? == 0 ]; then
+	echo == arch-chroot /mnt pacman -S --noconfirm gamin
+	messagebox "Pacman will ask you about packages to install - just press Enter to install them all. Then you will be asked about libgl implementation - choose appropriate one for your video card or press Enter to leave default one."
+	echo == arch-chroot /mnt pacman -S lxde
+	echo == cp /mnt/etc/skel/.xinitrc /mnt/home/${username}/
+	echo "" "111>>111" /mnt/home/${username}/.xinitrc
+	echo "## Added by Energy Linux installer." "111>>111" /mnt/home/${username}/.xinitrc
+	echo "exec startlxde" "111>>111" /mnt/home/${username}/.xinitrc
+	# TODO: exec ck-launch-session dbus-launch startlxde ?
+fi
+
 ITEM=reboot
 }
 
