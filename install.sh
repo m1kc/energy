@@ -191,7 +191,7 @@ ITEM=reboot
 
 installer_main()
 {
-dialog --nocancel --default-item $ITEM --menu "Do it step-by-step." 0 0 0 1 "Partition hard drive" 2 "Create filesystem" 3 "Mount filesystem" 4 "Connect to Internet" 5 "Select mirrors" 6 "Pacstrap" 7 "Configure new system" 8 "Install bootloader" 9 "Install optional packages" reboot Reboot zsh "Wait! I need command shell." abort Abort 2> $TMP
+dialog --nocancel --default-item $ITEM --menu "Do it step-by-step." 0 0 0 1 "Partition hard drive" 2 "Create filesystem" 3 "Mount filesystem" 4 "Connect to Internet" 5 "Select a mirror" 6 "Pacstrap" 7 "Configure new system" 8 "Install bootloader" 9 "Install optional packages" reboot Reboot zsh "Wait! I need command shell." abort Abort 2> $TMP
 variant=`cat $TMP`
 case $variant in
 	1)
