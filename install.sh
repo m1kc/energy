@@ -124,20 +124,24 @@ dialog --inputbox "Please specify your hostname. It is okay to leave default one
 echo == cat $TMP "111>111" /mnt/etc/hostname
 
 ### timezone
-# TODO: FUCK IT, USE SYSTEMD
+
+# TODO: UTC/localtime
 #To change the hardware clock time standard to localtime use:
 # timedatectl set-local-rtc 1
 #And to set it to UTC use:
 # timedatectl set-local-rtc 0
-#
-#To check the current zone:
-#$ timedatectl status
-#To list available zones:
-#$ timedatectl list-timezones
-#To change your time zone:
-# timedatectl set-timezone <Zone>/<SubZone>
-#Example:
-# timedatectl set-timezone Canada/Eastern
+
+#dialog --no-cancel --menu "Select your hardware clock mode. It is recommended to use UTC, but if you have Windows installed, you should you localtime." 0 0 0  0 UTC 1 localtime  2> $TMP
+#rtc=`cat $TMP`
+#echo == timedatectl --root=/mnt set-local-rtc $rtc
+
+timezones1=`timedatectl --no-pager list-timezones`
+timezones=""
+for i in $timezones1; do timezones="${timezones} ${i} -"; done
+dialog --menu "Select a timezone." 0 0 0 $timezones 2> $TMP
+if [ $? "!=" 0 ]; then return; fi
+timezone=`cat $TMP`
+echo == arch-chroot /mnt ln -s /usr/share/zoneinfo/${timezone} /etc/localtime
 
 ### TODO: set up NTP
 
@@ -192,7 +196,7 @@ ITEM=9
 
 installer_stuff()
 {
-# X server
+### X server
 dialog --yesno "Install X server?
 
 Answer \"yes\" if you are not sure." 0 0
