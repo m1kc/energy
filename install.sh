@@ -120,7 +120,7 @@ infobox "Creating fstab..."
 echo == genfstab -U -p /mnt "111>>111" /mnt/etc/fstab
 
 ### hostname
-dialog --inputbox "Please specify your hostname. It is okay to leave default one." 0 0 "myhost" 2> $TMP
+dialog --no-cancel --inputbox "Please specify your hostname. It is okay to leave default one." 0 0 "myhost" 2> $TMP
 echo == cat $TMP "111>111" /mnt/etc/hostname
 
 ### timezone
@@ -138,8 +138,7 @@ echo == cat $TMP "111>111" /mnt/etc/hostname
 timezones1=`timedatectl --no-pager list-timezones`
 timezones=""
 for i in $timezones1; do timezones="${timezones} ${i} -"; done
-dialog --menu "Select a timezone." 0 0 0 $timezones 2> $TMP
-if [ $? "!=" 0 ]; then return; fi
+dialog --no-cancel --menu "Select a timezone." 0 0 0 $timezones 2> $TMP
 timezone=`cat $TMP`
 echo == arch-chroot /mnt ln -s /usr/share/zoneinfo/${timezone} /etc/localtime
 
@@ -158,6 +157,17 @@ echo == arch-chroot /mnt mkinitcpio -p linux
 ### Root password
 messagebox "Now we need to set root password."
 echo == arch-chroot /mnt passwd
+
+### Create new user
+dialog --no-cancel --inputbox "Now we will create new user account. Please specify its name." 0 0 "user" 2> $TMP
+username=`cat $TMP`
+# TODO: -s /bin/zsh
+# TODO: -G networkmanager ?
+# TODO: -G wheel ?
+# TODO: -G camera ? errors
+echo == arch-chroot /mnt useradd -m -g users -G audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,video -s /bin/bash ${username}
+echo == arch-chroot /mnt passwd ${username}
+# TODO: add to sudoers
 
 ITEM=8
 }
