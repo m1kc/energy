@@ -108,8 +108,7 @@ ITEM=6
 installer_pacstrap()
 {
 #dialog --msgbox "Okay, now we will pacstrap base packages to your new system. Just relax and wait." 0 0
-echo == pacstrap /mnt base
-# TODO: base-devel w/ text
+echo == pacstrap /mnt base base-devel
 ITEM=7
 }
 
@@ -184,6 +183,7 @@ if [ $? == 0 ]; then
 	echo == systemctl --root=/mnt enable dhcpcd.service
 fi
 
+
 ITEM=8
 }
 
@@ -221,6 +221,19 @@ ITEM=9
 
 installer_stuff()
 {
+### yaourt
+dialog --yesno "Install yaourt?
+
+Answer \"yes\" if you are not sure." 0 0
+if [ $? == 0 ]; then
+	echo == mkdir /mnt/inst
+	echo == cp -r pkg/package-query /mnt/inst/
+	echo == arch-chroot /mnt bash -c "cd /inst/package-query/ && makepkg --asroot -s --noconfirm -i"
+	echo == cp -r pkg/yaourt /mnt/inst/
+	echo == arch-chroot /mnt bash -c "cd /inst/yaourt/ && makepkg --asroot -s --noconfirm -i"
+	echo == rm -rf /mnt/inst
+fi
+
 ### X server
 dialog --yesno "Install X server?
 
@@ -251,6 +264,8 @@ Answer \"yes\" if you are not sure." 0 0
 if [ $? == 0 ]; then
 	echo == arch-chroot /mnt pacman -S --noconfirm ttf-bitstream-vera ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
 fi
+
+
 
 ITEM=reboot
 }
