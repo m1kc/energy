@@ -163,15 +163,18 @@ dialog --no-cancel --inputbox "Now we will create new user account. Please speci
 username=`cat $TMP`
 # TODO: -s /bin/zsh
 # TODO: -G networkmanager ?
-# TODO: -G wheel ?
 # TODO: -G camera ? errors
-echo == arch-chroot /mnt useradd -m -g users -G audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,video -s /bin/bash ${username}
+# TODO: -G fuse ?
+echo == arch-chroot /mnt useradd -m -g users -G audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,video,wheel -s /bin/bash ${username}
 echo == arch-chroot /mnt passwd ${username}
-# TODO: add to sudoers
 
 ### sudo
 infobox "Installing sudo..."
 echo == arch-chroot /mnt pacman -S --noconfirm sudo
+
+echo == cat /mnt/etc/sudoers | sed "s/# %wheel\tALL=(ALL) ALL/%wheel\tALL=(ALL) ALL/" | sed "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/" "111>111" /mnt/etc/sudoers.new
+echo == mv /mnt/etc/sudoers.new /mnt/etc/sudoers
+# TODO: preprocess | from "111|111"
 
 ### dhcpcd
 dialog --yesno "Enable dhcpcd?
