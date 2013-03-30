@@ -169,6 +169,10 @@ echo == arch-chroot /mnt useradd -m -g users -G audio,disk,floppy,games,locate,l
 echo == arch-chroot /mnt passwd ${username}
 # TODO: add to sudoers
 
+### sudo
+infobox "Installing sudo..."
+echo == arch-chroot /mnt pacman -S --noconfirm sudo
+
 ### dhcpcd
 dialog --yesno "Enable dhcpcd?
 
