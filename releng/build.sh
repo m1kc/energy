@@ -86,7 +86,8 @@ make_customize_root_image() {
     #patch ${work_dir}/${arch}/root-image/usr/bin/pacman-key < ${script_path}/pacman-key-4.0.3_unattended-keyring-init.patch
     wget -O ${work_dir}/${arch}/root-image/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
 
-    lynx -dump -nolist 'https://wiki.archlinux.org/index.php/Installation_Guide?action=render' >> ${work_dir}/${arch}/root-image/root/install.txt
+    lynx -dump -nolist "https://wiki.archlinux.org/index.php/Installation_Guide?action=render" >> ${work_dir}/${arch}/root-image/root/installation-guide.txt
+    lynx -dump -nolist "https://wiki.archlinux.org/index.php/Beginners'_Guide?action=render" >> ${work_dir}/${arch}/root-image/root/beginners-guide.txt
 
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${pacman_conf}" -D "${install_dir}" -r '/root/customize_root_image.sh' run
     rm ${work_dir}/${arch}/root-image/root/customize_root_image.sh
