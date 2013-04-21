@@ -183,6 +183,15 @@ if [ $? == 0 ]; then
 	echo == systemctl --root=/mnt enable dhcpcd.service
 fi
 
+### ntpd
+dialog --yesno "Enable ntp daemon?
+
+Answer \"yes\" if you are not sure." 0 0
+if [ $? == 0 ]; then
+	echo == arch-chroot /mnt pacman -S --noconfirm ntp
+	echo == systemctl --root=/mnt enable ntpd.service
+fi
+
 
 ITEM=8
 }
