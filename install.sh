@@ -265,7 +265,25 @@ if [ $? == 0 ]; then
 	echo == arch-chroot /mnt pacman -S --noconfirm ttf-bitstream-vera ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
 fi
 
-
+dialog --no-cancel --checklist "Other packages" 0 0 0 \
+	firefox Firefox on \
+	midori Midori off \
+	chromium Chromium off \
+	lynx Lynx off \
+	links Links on \
+	elinks Elinks off \
+	w3m w3m off \
+	rsync rsync on \
+	grsync grsync off \
+	gnome-system-monitor "GNOME system monitor" on \
+	geany Geany on \
+	netbeans NetBeans off \
+	dmd "Digital Mars D compiler" on \
+	leafpad Leafpad off \
+	gedit gedit on \
+2> $TMP
+packages=`cat $TMP`
+echo == arch-chroot /mnt pacman -S --noconfirm ${packages}
 
 ITEM=reboot
 }
