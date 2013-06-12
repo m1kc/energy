@@ -34,6 +34,12 @@ Energy Linux is a lightweight Linux distribution based on Arch with batteries an
 Click OK to begin installation."
 }
 
+installer_prepare_hdd()
+{
+messagebox "cfdisk, mkfs, mount to /mnt. Start right now."
+}
+
+# Currently useless.
 installer_partition()
 {
 disks1="`lsblk -r | grep disk | cut -d" " -f1`"
@@ -48,6 +54,7 @@ echo == cfdisk $disk
 ITEM=2
 }
 
+# Currently useless.
 installer_makefs()
 {
 partitions1="`lsblk -r | grep part | cut -d" " -f1`"
@@ -62,6 +69,7 @@ echo == mkfs.ext4 $partition
 ITEM=3
 }
 
+# Currently useless.
 installer_mount()
 {
 partitions1="`lsblk -r | grep part | cut -d" " -f1`"
@@ -78,9 +86,8 @@ ITEM=4
 
 installer_internet()
 {
-# TODO: text
 # TODO: maybe, PPPoE?
-dialog --menu "It would be great to connect to the Internet to fetch latest updates. Of course, you can skip this step and install them later. Moreover, if you connect using wired connection like eth0, connection will be established automatically. In any of these cases, just type \"exit\" to leave command shell; otherwise configure your connection manually." 0 0 0 check "Check connection" wifi "Select wireless network" 2> $TMP
+dialog --menu "Setup requires an Internet connection. If you connect using wired connection like eth0, connection will be established automatically. If you don't see any suitable option, configure your connection manually." 0 0 0 check "Check connection" wifi "Select wireless network" 2> $TMP
 internet=`cat $TMP`
 case $internet in
 	check)
@@ -107,7 +114,6 @@ ITEM=6
 
 installer_pacstrap()
 {
-#dialog --msgbox "Okay, now we will pacstrap base packages to your new system. Just relax and wait." 0 0
 echo == pacstrap /mnt base base-devel
 ITEM=7
 }
@@ -140,8 +146,6 @@ for i in $timezones1; do timezones="${timezones} ${i} -"; done
 dialog --no-cancel --menu "Select a timezone." 0 0 0 $timezones 2> $TMP
 timezone=`cat $TMP`
 echo == arch-chroot /mnt ln -s /usr/share/zoneinfo/${timezone} /etc/localtime
-
-### TODO: set up NTP
 
 ### TODO: locale: locale.conf
 # TODO: /etc/locale.gen and generate with locale-gen.
@@ -176,21 +180,18 @@ echo == mv /mnt/etc/sudoers.new /mnt/etc/sudoers
 # TODO: preprocess | from "111|111"
 
 ### dhcpcd
-dialog --yesno "Enable dhcpcd?
-
-Answer \"yes\" if you are not sure." 0 0
-if [ $? == 0 ]; then
-	echo == systemctl --root=/mnt enable dhcpcd.service
-fi
+# Fuck it, we will use NetworkManager.
+#dialog --yesno "Enable dhcpcd?
+#
+#Answer \"yes\" if you are not sure." 0 0
+#if [ $? == 0 ]; then
+#	echo == systemctl --root=/mnt enable dhcpcd.service
+#fi
 
 ### ntpd
-dialog --yesno "Enable ntp daemon?
-
-Answer \"yes\" if you are not sure." 0 0
-if [ $? == 0 ]; then
-	echo == arch-chroot /mnt pacman -S --noconfirm ntp
-	echo == systemctl --root=/mnt enable ntpd.service
-fi
+infobox "Setting up NTP daemon..."
+echo == arch-chroot /mnt pacman -S --noconfirm ntp
+echo == systemctl --root=/mnt enable ntpd.service
 
 
 ITEM=8
@@ -231,25 +232,17 @@ ITEM=9
 installer_stuff()
 {
 ### yaourt
-dialog --yesno "Install yaourt?
-
-Answer \"yes\" if you are not sure." 0 0
-if [ $? == 0 ]; then
-	echo == mkdir /mnt/inst
-	echo == cp -r pkg/package-query /mnt/inst/
-	echo == arch-chroot /mnt bash -c "cd /inst/package-query/ && makepkg --asroot -s --noconfirm -i"
-	echo == cp -r pkg/yaourt /mnt/inst/
-	echo == arch-chroot /mnt bash -c "cd /inst/yaourt/ && makepkg --asroot -s --noconfirm -i"
-	echo == rm -rf /mnt/inst
-fi
+infobox "Installing yaourt..."
+echo == mkdir /mnt/inst
+echo == cp -r pkg/package-query /mnt/inst/
+echo == arch-chroot /mnt bash -c "cd /inst/package-query/ && makepkg --asroot -s --noconfirm -i"
+echo == cp -r pkg/yaourt /mnt/inst/
+echo == arch-chroot /mnt bash -c "cd /inst/yaourt/ && makepkg --asroot -s --noconfirm -i"
+echo == rm -rf /mnt/inst
 
 ### X server
-dialog --yesno "Install X server?
-
-Answer \"yes\" if you are not sure." 0 0
-if [ $? == 0 ]; then
-	echo == arch-chroot /mnt pacman -S --noconfirm xorg-server xorg-xinit xf86-video-vesa xterm
-fi
+infobox "Installing X server..."
+echo == arch-chroot /mnt pacman -S --noconfirm xorg-server xorg-xinit xf86-video-vesa xterm
 
 ### LXDE
 dialog --yesno "Install LXDE?
@@ -267,49 +260,42 @@ if [ $? == 0 ]; then
 fi
 
 ### Fonts
-dialog --yesno "Install TTF fonts?
+infobox "Installing TTF fonts..."
+echo == arch-chroot /mnt pacman -S --noconfirm ttf-bitstream-vera ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
 
-Answer \"yes\" if you are not sure." 0 0
-if [ $? == 0 ]; then
-	echo == arch-chroot /mnt pacman -S --noconfirm ttf-bitstream-vera ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
-fi
-
-dialog --no-cancel --checklist "Other packages" 0 0 0 \
-	firefox Firefox on \
-	midori Midori off \
-	chromium Chromium off \
-	lynx Lynx off \
-	links Links on \
-	elinks Elinks off \
-	w3m w3m off \
-	rsync rsync on \
-	grsync grsync off \
-	gnome-system-monitor "GNOME system monitor" on \
-	geany Geany on \
-	netbeans NetBeans off \
-	dmd "Digital Mars D compiler" on \
-	leafpad Leafpad off \
-	gedit gedit on \
-2> $TMP
-packages=`cat $TMP`
-echo == arch-chroot /mnt pacman -S --noconfirm ${packages}
+### Other, categorized
+infobox "Installing other packages..."
+#dialog --no-cancel --checklist "Other packages" 0 0 0 \
+#	firefox Firefox on \
+#	midori Midori off \
+#	chromium Chromium off \
+#	lynx Lynx off \
+#	links Links on \
+#	elinks Elinks off \
+#	w3m w3m off \
+#	rsync rsync on \
+#	grsync grsync off \
+#	gnome-system-monitor "GNOME system monitor" on \
+#	geany Geany on \
+#	netbeans NetBeans off \
+#	dmd "Digital Mars D compiler" on \
+#	leafpad Leafpad off \
+#	gedit gedit on \
+#2> $TMP
+#packages=`cat $TMP`
+#echo == arch-chroot /mnt pacman -S --noconfirm ${packages}
+echo == arch-chroot /mnt pacman -S --noconfirm firefox midori chromium lynx links elinks w3m rsync grsync gnome-system-monitor geany netbeans dmd leafpad gedit
 
 ITEM=reboot
 }
 
 installer_main()
 {
-dialog --nocancel --default-item $ITEM --menu "Do it step-by-step." 0 0 0 1 "Partition hard drive" 2 "Create filesystem" 3 "Mount filesystem" 4 "Connect to Internet" 5 "Select a mirror" 6 "Pacstrap" 7 "Configure new system" 8 "Install bootloader" 9 "Install optional packages" reboot Reboot zsh "Wait! I need command shell." abort Abort 2> $TMP
+dialog --nocancel --default-item $ITEM --menu "Do it step-by-step." 0 0 0 1 "Prepare hard drive" 4 "Connect to Internet" 5 "Select a mirror" 6 "Install base system" 7 "Configure new system" 9 "Install main packages" 8 "Install bootloader" reboot Reboot zsh "Wait! I need command shell." abort Abort 2> $TMP
 variant=`cat $TMP`
 case $variant in
 	1)
-		installer_partition
-		;;
-	2)
-		installer_makefs
-		;;
-	3)
-		installer_mount
+		installer_prepare_hdd
 		;;
 	4)
 		installer_internet
