@@ -16,7 +16,9 @@ dirty:
 	sudo rm -fv work/build.make_iso_x86_64
 	sudo ./releng/build.sh -v -N "energy" -V "0.1" -L "EnergyLinux-0.1"
 
-clean:
+backup:
 	sudo rm -rf out_old/
 	sudo mv out out_old
-	sudo rm -rf work/
+
+clean:
+	sudo rm -rf out/ work/
