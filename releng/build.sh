@@ -40,7 +40,7 @@ _usage ()
 run_once() {
     echo -n "==> Target $1 for $arch: "
     if [[ ! -e ${work_dir}/build.${1}_${arch} ]]; then
-    	echo "running"
+        echo "running"
         $1
         touch ${work_dir}/build.${1}_${arch}
     else
@@ -83,7 +83,6 @@ make_setup_mkinitcpio() {
 make_customize_root_image() {
     cp -af ${script_path}/root-image ${work_dir}/${arch}
 
-    #patch ${work_dir}/${arch}/root-image/usr/bin/pacman-key < ${script_path}/pacman-key-4.0.3_unattended-keyring-init.patch
     wget -O ${work_dir}/${arch}/root-image/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
 
     lynx -dump -nolist "https://wiki.archlinux.org/index.php/Installation_Guide?action=render" >> ${work_dir}/${arch}/root-image/root/installation-guide.txt
