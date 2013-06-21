@@ -279,7 +279,7 @@ infobox "Installing other packages..."
 #2> $TMP
 #packages=`cat $TMP`
 #echo == arch-chroot /mnt pacman -S --noconfirm ${packages}
-echo == arch-chroot /mnt pacman -S --noconfirm firefox midori chromium lynx links elinks w3m rsync grsync gnome-system-monitor geany netbeans dmd leafpad gedit
+##############echo == arch-chroot /mnt pacman -S --noconfirm firefox midori chromium lynx links elinks w3m rsync grsync gnome-system-monitor geany netbeans dmd leafpad gedit
 
 ITEM=reboot
 }
