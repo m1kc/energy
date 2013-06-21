@@ -239,6 +239,7 @@ echo == arch-chroot /mnt bash -c "cd /inst/package-query/ && makepkg --asroot -s
 echo == cp -r pkg/yaourt /mnt/inst/
 echo == arch-chroot /mnt bash -c "cd /inst/yaourt/ && makepkg --asroot -s --noconfirm -i"
 echo == rm -rf /mnt/inst
+echo == arch-chroot /mnt yaourt -S --noconfirm yaourt
 
 ### X server
 infobox "Installing X server..."
