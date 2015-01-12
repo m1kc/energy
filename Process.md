@@ -39,7 +39,13 @@ echo == timedatectl --root=/mnt set-local-rtc $rtc
 * ntpd;
 * yaourt;
 * Xorg;
+* Display drivers;
 * GNOME & GDM;
 * Fonts;
 * Другие пакеты;
+* Codecs;
+* DNS caching?
+* mlocate?
+* cups?
+* zsh?
 * Перезагрузка.
