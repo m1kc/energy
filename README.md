@@ -16,6 +16,8 @@ Building an ISO
 * Arch Linux running on x86_64;
 * archiso package.
 
+Got no Arch and you don't know how to install it? Try building Energy in a Docker container.
+
 
 #### Instructions
 
