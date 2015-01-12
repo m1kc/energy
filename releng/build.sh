@@ -69,18 +69,21 @@ make_packages() {
 # Copy mkinitcpio archiso hooks and build initramfs (airootfs)
 make_setup_mkinitcpio() {
     local _hook
+    mkdir -p ${work_dir}/${arch}/airootfs/etc/initcpio/hooks
+    mkdir -p ${work_dir}/${arch}/airootfs/etc/initcpio/install
     for _hook in archiso archiso_shutdown archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs archiso_loop_mnt; do
-        cp /usr/lib/initcpio/hooks/${_hook} ${work_dir}/${arch}/airootfs/usr/lib/initcpio/hooks
-        cp /usr/lib/initcpio/install/${_hook} ${work_dir}/${arch}/airootfs/usr/lib/initcpio/install
+        cp /usr/lib/initcpio/hooks/${_hook} ${work_dir}/${arch}/airootfs/etc/initcpio/hooks
+        cp /usr/lib/initcpio/install/${_hook} ${work_dir}/${arch}/airootfs/etc/initcpio/install
     done
-    cp /usr/lib/initcpio/install/archiso_kms ${work_dir}/${arch}/airootfs/usr/lib/initcpio/install
-    cp /usr/lib/initcpio/archiso_shutdown ${work_dir}/${arch}/airootfs/usr/lib/initcpio
+    sed -i "s|/usr/lib/initcpio/|/etc/initcpio/|g" ${work_dir}/${arch}/airootfs/etc/initcpio/install/archiso_shutdown
+    cp /usr/lib/initcpio/install/archiso_kms ${work_dir}/${arch}/airootfs/etc/initcpio/install
+    cp /usr/lib/initcpio/archiso_shutdown ${work_dir}/${arch}/airootfs/etc/initcpio
     cp ${script_path}/mkinitcpio.conf ${work_dir}/${arch}/airootfs/etc/mkinitcpio-archiso.conf
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${pacman_conf}" -D "${install_dir}" -r 'mkinitcpio -c /etc/mkinitcpio-archiso.conf -k /boot/vmlinuz-linux -g /boot/archiso.img' run
 }
 
 # Customize installation (airootfs)
-make_customize_root_image() {
+make_customize_airootfs() {
     cp -af ${script_path}/airootfs ${work_dir}/${arch}
 
     wget -O ${work_dir}/${arch}/airootfs/etc/pacman.d/mirrorlist 'https://www.archlinux.org/mirrorlist/?country=all&protocol=http&use_mirror_status=on'
@@ -88,8 +91,8 @@ make_customize_root_image() {
     lynx -dump -nolist "https://wiki.archlinux.org/index.php/Installation_Guide?action=render" >> ${work_dir}/${arch}/airootfs/root/installation-guide.txt
     lynx -dump -nolist "https://wiki.archlinux.org/index.php/Beginners'_Guide?action=render" >> ${work_dir}/${arch}/airootfs/root/beginners-guide.txt
 
-    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${pacman_conf}" -D "${install_dir}" -r '/root/customize_root_image.sh' run
-    rm ${work_dir}/${arch}/airootfs/root/customize_root_image.sh
+    setarch ${arch} mkarchiso ${verbose} -w "${work_dir}/${arch}" -C "${pacman_conf}" -D "${install_dir}" -r '/root/customize_airootfs.sh' run
+    rm ${work_dir}/${arch}/airootfs/root/customize_airootfs.sh
 }
 
 # Prepare kernel/initramfs ${install_dir}/boot/
@@ -103,6 +106,8 @@ make_boot() {
 make_boot_extra() {
     cp ${work_dir}/${arch}/airootfs/boot/memtest86+/memtest.bin ${work_dir}/iso/${install_dir}/boot/memtest
     cp ${work_dir}/${arch}/airootfs/usr/share/licenses/common/GPL2/license.txt ${work_dir}/iso/${install_dir}/boot/memtest.COPYING
+    cp ${work_dir}/${arch}/airootfs/boot/intel-ucode.img ${work_dir}/iso/${install_dir}/boot/intel_ucode.img
+    cp ${work_dir}/${arch}/airootfs/usr/share/licenses/intel-ucode/LICENSE ${work_dir}/iso/${install_dir}/boot/intel_ucode.LICENSE
 }
 
 # Prepare /${install_dir}/boot/syslinux
@@ -114,8 +119,7 @@ make_syslinux() {
     done
     cp ${script_path}/syslinux/splash.png ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/*.c32 ${work_dir}/iso/${install_dir}/boot/syslinux
-    cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/*.com ${work_dir}/iso/${install_dir}/boot/syslinux
-    cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/*.0 ${work_dir}/iso/${install_dir}/boot/syslinux
+    cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/lpxelinux.0 ${work_dir}/iso/${install_dir}/boot/syslinux
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/memdisk ${work_dir}/iso/${install_dir}/boot/syslinux
     mkdir -p ${work_dir}/iso/${install_dir}/boot/syslinux/hdt
     gzip -c -9 ${work_dir}/${arch}/airootfs/usr/share/hwdata/pci.ids > ${work_dir}/iso/${install_dir}/boot/syslinux/hdt/pciids.gz
@@ -128,6 +132,7 @@ make_isolinux() {
     sed "s|%INSTALL_DIR%|${install_dir}|g" ${script_path}/isolinux/isolinux.cfg > ${work_dir}/iso/isolinux/isolinux.cfg
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/isolinux.bin ${work_dir}/iso/isolinux/
     cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/isohdpfx.bin ${work_dir}/iso/isolinux/
+    cp ${work_dir}/${arch}/airootfs/usr/lib/syslinux/ldlinux.c32 ${work_dir}/iso/isolinux/
 }
 
 # Prepare /EFI
@@ -166,6 +171,8 @@ make_efiboot() {
     cp ${work_dir}/iso/${install_dir}/boot/x86_64/vmlinuz ${work_dir}/efiboot/EFI/archiso/vmlinuz.efi
     cp ${work_dir}/iso/${install_dir}/boot/x86_64/archiso.img ${work_dir}/efiboot/EFI/archiso/archiso.img
 
+    cp ${work_dir}/iso/${install_dir}/boot/intel_ucode.img ${work_dir}/efiboot/EFI/archiso/intel_ucode.img
+
     mkdir -p ${work_dir}/efiboot/EFI/boot
     cp ${work_dir}/x86_64/airootfs/usr/lib/prebootloader/PreLoader.efi ${work_dir}/efiboot/EFI/boot/bootx64.efi
     cp ${work_dir}/x86_64/airootfs/usr/lib/prebootloader/HashTool.efi ${work_dir}/efiboot/EFI/boot/
@@ -187,13 +194,7 @@ make_efiboot() {
     umount ${work_dir}/efiboot
 }
 
-# Copy aitab
-make_aitab() {
-    mkdir -p ${work_dir}/iso/${install_dir}
-    cp ${script_path}/aitab ${work_dir}/iso/${install_dir}/aitab
-}
-
-# Build all filesystem images specified in aitab (.fs.sfs .sfs)
+# Build airootfs filesystem image
 make_prepare() {
     cp -a -l -f ${work_dir}/${arch}/airootfs ${work_dir}
     setarch ${arch} mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" pkglist
@@ -204,7 +205,6 @@ make_prepare() {
 
 # Build ISO
 make_iso() {
-    mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" checksum
     mkarchiso ${verbose} -w "${work_dir}" -D "${install_dir}" -L "${iso_label}" -o "${out_dir}" iso "${iso_name}-${iso_version}-dual.iso"
 }
 
@@ -244,7 +244,7 @@ for arch in i686 x86_64; do
     run_once make_basefs
     run_once make_packages
     run_once make_setup_mkinitcpio
-    run_once make_customize_root_image
+    run_once make_customize_airootfs
 done
 
 for arch in i686 x86_64; do
@@ -257,8 +257,6 @@ run_once make_syslinux
 run_once make_isolinux
 run_once make_efi
 run_once make_efiboot
-
-run_once make_aitab
 
 for arch in i686 x86_64; do
     run_once make_prepare
