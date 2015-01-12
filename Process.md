@@ -9,6 +9,17 @@
 7. Создать fstab: `genfstab -p /mnt >> /mnt/etc/fstab`;
 8. Задать имя хоста: [chroot] `echo X > /etc/hostname`, [chroot] `hostnamectl set-hostname`;
 9. Задать часовой пояс: [chroot] `ln -sf /usr/share/zoneinfo/zone/subzone /etc/localtime`;
+10. Выбрать из UTC/localtime.
+```
+# TODO: UTC/localtime
+#To change the hardware clock time standard to localtime use:
+# timedatectl set-local-rtc 1
+#And to set it to UTC use:
+# timedatectl set-local-rtc 0
+#dialog --no-cancel --menu "Select your hardware clock mode. It is recommended to use UTC, but if you have Windows installed, you should you localtime." 0 0 0  0 UTC 1 localtime  2> $TMP
+#rtc=`cat $TMP`
+#echo == timedatectl --root=/mnt set-local-rtc $rtc
+```
 10. Сгенерировать локали: `/etc/locale.gen`, [chroot] `locale-gen`;
 11. Выбрать локаль: `echo LANG=your_locale > /etc/locale.conf`;
 12. Add console keymap and font preferences in `/etc/vconsole.conf`;
