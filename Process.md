@@ -9,6 +9,14 @@
 7. Создать fstab: `genfstab -p /mnt >> /mnt/etc/fstab`;
 8. Задать имя хоста: [chroot] `echo X > /etc/hostname`, [chroot] `hostnamectl set-hostname`;
 9. Задать часовой пояс: [chroot] `ln -sf /usr/share/zoneinfo/zone/subzone /etc/localtime`;
+```
+timezones1=`timedatectl --no-pager list-timezones`
+timezones=""
+for i in $timezones1; do timezones="${timezones} ${i} -"; done
+dialog --no-cancel --menu "Select a timezone." 0 0 0 $timezones 2> $TMP
+timezone=`cat $TMP`
+echo == arch-chroot /mnt ln -s /usr/share/zoneinfo/${timezone} /etc/localtime
+```
 10. Выбрать из UTC/localtime.
 ```
 # TODO: UTC/localtime
