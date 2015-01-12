@@ -1,15 +1,15 @@
 Реализации меняются, процесс остаётся.
 
-1. Подготовить разделы: `cfdisk /dev/sdX`;
-2. Создать файловые системы: `mkfs.X`, `mkswap`;
-3. Смонтировать разделы в `/mnt`: `mount`, `swapon`;
-4. Подключиться к интернету: `ping`, `wifi-menu`, прочее;
-5. Выбрать зеркала: `/etc/pacman.d/mirrorlist`;
-6. Установить базовые пакеты: `pacstrap /mnt base [base-devel]`;
-7. Создать fstab: `genfstab -p /mnt >> /mnt/etc/fstab`;
-8. Задать имя хоста: [chroot] `echo X > /etc/hostname`, [chroot] `hostnamectl set-hostname`;
-9. Задать часовой пояс: [chroot] `ln -sf /usr/share/zoneinfo/zone/subzone /etc/localtime`;
-```
+* Подготовить разделы: `cfdisk /dev/sdX`;
+* Создать файловые системы: `mkfs.X`, `mkswap`;
+* Смонтировать разделы в `/mnt`: `mount`, `swapon`;
+* Подключиться к интернету: `ping`, `wifi-menu`, прочее;
+* Выбрать зеркала: `/etc/pacman.d/mirrorlist`;
+* Установить базовые пакеты: `pacstrap /mnt base [base-devel]`;
+* Создать fstab: `genfstab -p /mnt >> /mnt/etc/fstab`;
+* Задать имя хоста: [chroot] `echo X > /etc/hostname`, [chroot] `hostnamectl set-hostname`;
+* Задать часовой пояс: [chroot] `ln -sf /usr/share/zoneinfo/zone/subzone /etc/localtime`;
+```sh
 timezones1=`timedatectl --no-pager list-timezones`
 timezones=""
 for i in $timezones1; do timezones="${timezones} ${i} -"; done
@@ -17,30 +17,29 @@ dialog --no-cancel --menu "Select a timezone." 0 0 0 $timezones 2> $TMP
 timezone=`cat $TMP`
 echo == arch-chroot /mnt ln -s /usr/share/zoneinfo/${timezone} /etc/localtime
 ```
-10. Выбрать из UTC/localtime.
+* Выбрать из UTC/localtime.
+```sh
+# To change the hardware clock time standard to localtime use:
+timedatectl set-local-rtc 1
+# And to set it to UTC use:
+timedatectl set-local-rtc 0
+dialog --no-cancel --menu "Select your hardware clock mode. It is recommended to use UTC, but if you have Windows installed, you should you localtime." 0 0 0  0 UTC 1 localtime  2> $TMP
+rtc=`cat $TMP`
+echo == timedatectl --root=/mnt set-local-rtc $rtc
 ```
-# TODO: UTC/localtime
-#To change the hardware clock time standard to localtime use:
-# timedatectl set-local-rtc 1
-#And to set it to UTC use:
-# timedatectl set-local-rtc 0
-#dialog --no-cancel --menu "Select your hardware clock mode. It is recommended to use UTC, but if you have Windows installed, you should you localtime." 0 0 0  0 UTC 1 localtime  2> $TMP
-#rtc=`cat $TMP`
-#echo == timedatectl --root=/mnt set-local-rtc $rtc
-```
-10. Сгенерировать локали: `/etc/locale.gen`, [chroot] `locale-gen`;
-11. Выбрать локаль: `echo LANG=your_locale > /etc/locale.conf`;
-12. Add console keymap and font preferences in `/etc/vconsole.conf`;
-13. Configure the network for the newly installed environment: see Network configuration and Wireless network configuration;
-14. Configure /etc/mkinitcpio.conf if additional features are needed. Create a new initial RAM disk with `mkinitcpio -p linux`;
-15. Задать пароль рута: [chroot] `passwd`;
-16. Install a bootloader;
-17. Создать юзера, установить sudo, разрешить доступ группе wheel;
-18. dhcpd?
-19. ntpd;
-20. yaourt;
-21. Xorg;
-22. GNOME & GDM;
-23. Fonts;
-24. Другие пакеты;
-25. Перезагрузка.
+* Сгенерировать локали: `/etc/locale.gen`, [chroot] `locale-gen`;
+* Выбрать локаль: `echo LANG=your_locale > /etc/locale.conf`;
+* Add console keymap and font preferences in `/etc/vconsole.conf`;
+* Configure the network for the newly installed environment: see Network configuration and Wireless network configuration;
+* Configure /etc/mkinitcpio.conf if additional features are needed. Create a new initial RAM disk with `mkinitcpio -p linux`;
+* Задать пароль рута: [chroot] `passwd`;
+* Install a bootloader;
+* Создать юзера, установить sudo, разрешить доступ группе wheel;
+* dhcpd?
+* ntpd;
+* yaourt;
+* Xorg;
+* GNOME & GDM;
+* Fonts;
+* Другие пакеты;
+* Перезагрузка.
