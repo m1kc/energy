@@ -1,4 +1,4 @@
 work/
 out/
 out_old/
-releng/root-image/root/install.sh
+releng/airootfs/root/install.sh
