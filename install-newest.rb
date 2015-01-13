@@ -91,8 +91,9 @@ while true do
 - 'Configure the network' \
 - 'Tune mkinitcpio.conf' \
 - 'Set root password' \
-- 'Create a user' \
 - 'Set up sudo' \
+- 'Install zsh' \
+- 'Create a user' \
 - 'Set up dhcpcd' \
 - 'Install yaourt' \
 - 'Install Xorg' \
@@ -104,7 +105,6 @@ while true do
 - 'Set up DNS caching' \
 - 'Set up mlocate' \
 - 'Install CUPS' \
-- 'Install zsh' \
 reboot 'Reboot' \
 zsh 'Wait! I need command shell.' \
 quit 'Quit' \
