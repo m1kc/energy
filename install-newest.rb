@@ -11,11 +11,18 @@ def invoke(x)
 	if release
 		code = system(x)
 		if code == false
-			system 'read'
+			println 'Command failed. Press Enter to continue.'
+			system 'sh -c read'
 		end
 	else
 		print "[DEBUG]=> #{x}"
-		system "sleep 2s"
+		system "sleep 0.5s"
+		print '.'
+		system "sleep 0.5s"
+		print '.'
+		system "sleep 0.5s"
+		print '.'
+		system "sleep 0.5s"
 		print "\n"
 	end
 end
@@ -56,6 +63,16 @@ def input(label, default)
 	return result
 end
 
+def simplechoose(header, items)
+	header = enquote header
+	x = ''
+	items.each { |item|
+		x += "  #{item} -  "
+	}
+	result = `dialog --stdout --no-cancel --menu #{header} 0 0 0 #{x}`
+	return result
+end
+
 # Installer utilities ==========================================================
 
 def hdds
@@ -64,6 +81,10 @@ end
 
 def mkfses
 	return `ls /usr/bin/mkfs.* | sed 's|/usr/bin/mkfs.||g'`.split("\n")
+end
+
+def locales(from)
+	return `cat #{from} | grep -v '^#' | cut -d' ' -f1`.split("\n")
 end
 
 # main =========================================================================
@@ -85,26 +106,26 @@ while true do
 - 'Set timezone' \
 - 'Set hardware clock mode' \
 - 'Activate NTP daemon' \
-- 'Generate locales' \
-- 'Set preferred locale' \
+24 'Generate locales' \
+25 'Set preferred locale' \
 - 'Set console keymap and font' \
 - 'Configure the network' \
 - 'Tune mkinitcpio.conf' \
-- 'Set root password' \
+29 'Set root password' \
 - 'Set up sudo' \
-- 'Install zsh' \
-- 'Create a user' \
+31 'Create a user' \
 - 'Set up dhcpcd' \
 - 'Install yaourt' \
 - 'Install Xorg' \
-- 'Install TTF fonts' \
 - 'Install display drivers' \
+- 'Install TTF fonts' \
 - 'Install GNOME' \
 - 'Install other packages' \
 - 'Install codecs' \
 - 'Set up DNS caching' \
 - 'Set up mlocate' \
 - 'Install CUPS' \
+43 'Install GRUB' \
 reboot 'Reboot' \
 zsh 'Wait! I need command shell.' \
 quit 'Quit' \
@@ -162,6 +183,42 @@ quit 'Quit' \
 		hostname = input 'Desired hostname:', 'myhost'
 		hostname = enquote hostname
 		invoke "echo #{hostname} > /mnt/etc/hostname"
+	end
+	if variant == '24'  # Generate locales
+		messagebox 'Now you will see the list of locales. Uncomment the ones you need.'
+		invoke 'nano /mnt/etc/locale.gen'
+		infobox 'Generating...'
+		invoke 'arch-chroot /mnt locale-gen'
+	end
+	if variant == '25'  # Set preferred locale
+		# /mnt/etc/locale.conf
+		# example:
+		# LANG=ru_RU.UTF-8
+		l = simplechoose 'Available locales:', locales('/mnt/etc/locale.gen')
+		l = enquote l
+		invoke "echo LANG=#{l} > /mnt/etc/locale.conf"
+	end
+	if variant == '29'  # Set root password
+		invoke 'arch-chroot /mnt passwd'
+	end
+	if variant == '32'  # Create a user
+		username = input 'Username:', 'm1kc'
+		username = enquote username
+		# TODO: zsh
+		shell = input 'Shell:', '/bin/bash'
+		shell = enquote shell
+		groups = input 'Groups:', 'audio,disk,floppy,games,locate,lp,network,optical,power,scanner,storage,sys,video,wheel'
+		groups = enquote groups
+		invoke "arch-chroot /mnt useradd -m -g users -G #{groups} -s #{shell} #{username}"
+		invoke "arch-chroot /mnt passwd #{username}"
+	end
+	if variant == '43'  # Install GRUB
+		d = input 'Device:', '/dev/sd'
+		d = enquote(d)
+		infobox 'Installing...'
+		invoke 'arch-chroot /mnt pacman -S --noconfirm grub-bios'
+		invoke "arch-chroot /mnt grub-install #{d}"
+		invoke 'arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg'
 	end
 
 	if variant == '-'  # Not implemented
