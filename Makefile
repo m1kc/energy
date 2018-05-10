@@ -20,3 +20,7 @@ backup:
 
 clean:
 	sudo rm -rf out/ work/
+
+
+test:
+	python -m unittest -b -v install.py
