@@ -1,7 +1,13 @@
 all: iso
 
 copy-installer:
-	sudo cp ./bleeding-edge.sh releng/airootfs/root/bleeding-edge.sh
+	sudo rm -f releng/airootfs/root/install.py
+	sudo rm -rf releng/airootfs/root/installer
+
+	sudo cp ./install.py releng/airootfs/root/
+	sudo cp -r ./installer releng/airootfs/root/
+
+	sudo cp ./bleeding-edge.sh releng/airootfs/root/
 
 # Regular full build
 iso: copy-installer
