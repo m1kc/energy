@@ -1,17 +1,15 @@
-all:
-	sudo rm -f releng/airootfs/root/install.sh
-	cat install.sh | sed "s/echo == //g" | sed "s/;  sleep 1s//g" | sed "s/\"111>>111\"/>>/g" | sed "s/\"111>111\"/>/g" > install-real.sh
-	sudo mv install-real.sh releng/airootfs/root/install.sh
-	sudo chmod +x releng/airootfs/root/install.sh
+all: iso
+
+copy-installer:
+	sudo cp ./bleeding-edge.sh releng/airootfs/root/bleeding-edge.sh
+
+# Regular full build
+iso: copy-installer
 	sudo ./releng/build.sh -v -N "energy" -V "0.1" -L "EnergyLinux-0.1"
 
-dirty:
-	# Rebuild only x86_64
-	sudo rm -f releng/airootfs/root/install.sh
-	cat install.sh | sed "s/echo == //g" | sed "s/;  sleep 1s//g" | sed "s/\"111>>111\"/>>/g" | sed "s/\"111>111\"/>/g" > install-real.sh
-	sudo mv install-real.sh releng/airootfs/root/install.sh
-	sudo chmod +x releng/airootfs/root/install.sh
-	sudo rm -rf work/*x86_64
+# Replace installer, take other stuff from the last full build
+iso-fast: copy-installer
+	sudo rm work/build.{make_prepare,make_iso,make_customize_airootfs,make_boot,make_boot_extra,make_syslinux,make_isolinux,make_efi,make_efiboot}_x86_64
 	sudo ./releng/build.sh -v -N "energy" -V "0.1" -L "EnergyLinux-0.1"
 
 backup:

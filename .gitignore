@@ -1,7 +1,11 @@
 work/
 out/
 out_old/
+
 releng/airootfs/root/install.sh
+releng/airootfs/root/install.py
+releng/airootfs/root/installer
+releng/airootfs/root/bleeding-edge.sh
 
 
 # Created by https://www.gitignore.io/api/python
