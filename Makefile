@@ -27,4 +27,4 @@ clean:
 
 
 test:
-	python -m unittest -b -v install.py
+	python -m unittest -v -b installer/test*
