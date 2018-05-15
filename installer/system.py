@@ -40,22 +40,26 @@ class RealSystem(object):
 		invoke(['mkfs.'+type, '/dev/'+partition])
 
 	def mount(self, partition, mountpoint):
-		invoke(['mount', '/dev/'+partition, mountpoint])
+		invoke(['mount', '-v', '/dev/'+partition, mountpoint])
 
 	def pacstrap(self, root_dir, packages):
-		pass
+		invoke(['pacstrap', root_dir] + packages)
 
 	def genfstab(self, root_dir, args, filename):
-		pass
+		invoke('genfstab /mnt | tee /mnt/etc/fstab', shell=True)
 
 	def chroot_passwd(self, login, password):
 		pass
 
 	def chroot_install(self, packages):
-		pass
+		invoke(['arch-chroot', '/mnt', 'pacman', '-S'] + packages)
 
 	def chroot_configure_loader(self, type):
-		pass
+		if type != 'grub':
+			raise ValueError(f'Unsupported bootloader: {type}')
+		invoke(['arch-chroot', '/mnt', 'grub-mkconfig', '-o', '/boot/grub/grub.cfg'])
 
 	def chroot_install_loader(self, type, device):
-		pass
+		if type != 'grub':
+			raise ValueError(f'Unsupported bootloader: {type}')
+		invoke(['arch-chroot', '/mnt', 'grub-install', device])
