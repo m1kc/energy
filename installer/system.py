@@ -23,19 +23,24 @@ class RealSystem(object):
 		invoke(['dd', 'if=/dev/zero', 'of=/dev/'+device, 'bs=1M', 'count=10'])
 		script = '\n'.join([
 			'label: dos',  # MBR
-			',',  # Whole-disk partition
 			'write',
 		])
 		invoke(['sfdisk', '/dev/'+device], input=script)
 
-	def create_partition(self, device, expected_name):
-		pass
+	def create_partition(self, device, expected_name, start=None, size=None, type=None, bootable=False):
+		# TODO: check if expected_name is sane
+		script = '\n'.join([
+			',',  # Whole-disk partition, TODO: actually use input params
+			'write',
+		])
+		invoke(['sfdisk', '/dev/'+device], input=script)
+		# TODO: check if expected_name matched
 
 	def mkfs(self, partition, type):
-		pass
+		invoke(['mkfs.'+type, '/dev/'+partition])
 
 	def mount(self, partition, mountpoint):
-		pass
+		invoke(['mount', '/dev/'+partition, mountpoint])
 
 	def pacstrap(self, root_dir, packages):
 		pass
