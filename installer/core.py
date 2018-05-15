@@ -11,11 +11,14 @@ class Installer(object):
 			print(f'We support only BIOS. Stopping.')
 			return
 
+		device = self.conf['storage_auto_device']
+		part = f"{device}1"
+
 		if self.conf['storage_auto'] == True:
-			self.pc.create_pt('sda', 'mbr')
-			self.pc.create_partition('sda', 'sda1')
-			self.pc.mkfs('sda1', 'ext4')
-			self.pc.mount('sda1', '/mnt')
+			self.pc.create_pt(device, 'mbr')
+			self.pc.create_partition(device, part)
+			self.pc.mkfs(part, 'ext4')
+			self.pc.mount(part, '/mnt')
 		else:
 			print('`storage_auto` is not set, skipping partitioning')
 			print('Assuming filesystems are mounted on /mnt')
@@ -26,7 +29,7 @@ class Installer(object):
 		if self.conf['bootloader'] == 'grub':
 			self.pc.chroot_install(['grub'])
 			self.pc.chroot_configure_loader('grub')
-			self.pc.chroot_install_loader('grub', 'sda')
+			self.pc.chroot_install_loader('grub', self.conf['bootloader_device'])
 		else:
 			print(f"Unknown bootloader `{self.conf['bootloader']}`, skipping")
 

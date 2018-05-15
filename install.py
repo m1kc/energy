@@ -10,8 +10,10 @@ import unittest
 def main():
 	conf = {
 		'storage_auto': True,
+		'storage_auto_device': 'sda',
 		'root_passwd': '******',
 		'bootloader': 'grub',
+		'bootloader_device': 'sda',
 	}
 	# pc = Emulator('bios')
 	pc = RealSystem()
