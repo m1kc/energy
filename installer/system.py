@@ -52,7 +52,7 @@ class RealSystem(object):
 		pass
 
 	def chroot_install(self, packages):
-		invoke(['arch-chroot', '/mnt', 'pacman', '-S'] + packages)
+		invoke(['arch-chroot', '/mnt', 'pacman', '-S', '--noconfirm'] + packages)
 
 	def chroot_configure_loader(self, type):
 		if type != 'grub':
@@ -62,4 +62,4 @@ class RealSystem(object):
 	def chroot_install_loader(self, type, device):
 		if type != 'grub':
 			raise ValueError(f'Unsupported bootloader: {type}')
-		invoke(['arch-chroot', '/mnt', 'grub-install', device])
+		invoke(['arch-chroot', '/mnt', 'grub-install', '/dev/'+device])
