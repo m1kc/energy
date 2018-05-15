@@ -33,4 +33,6 @@ class Installer(object):
 		else:
 			print(f"Unknown bootloader `{self.conf['bootloader']}`, skipping")
 
-		self.pc.chroot_passwd('root', self.conf.root_passwd)
+		self.pc.chroot_passwd('root', self.conf['root_passwd'])
+
+		print('Installation complete.')

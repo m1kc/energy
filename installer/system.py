@@ -1,7 +1,10 @@
 import subprocess
 
 def invoke(*args, **kwargs):
-	return subprocess.run(*args, **kwargs, check=True)
+	kwargs['check'] = True
+	if 'input' in kwargs:
+		kwargs['input'] = kwargs['input'].encode('utf-8')
+	return subprocess.run(*args, **kwargs)
 
 class RealSystem(object):
 	def __init__(self):
